@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Neon Vision</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Font: Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Background SVG */
+        body {
+            background: #0F172A; /* Dark Navy */
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            color: #8BE9FD; /* Neon Cyan */
+            font-family: 'Orbitron', sans-serif; /* Font futuristik */
+        }
+        /* SVG sebagai background */
+        .background-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        /* Login Container */
+        .login-container {
+            background: rgba(30, 41, 59, 0.9); /* Semi-transparent background */
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 20px rgba(20, 184, 166, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 {
+            color: #14B8A6; /* Teal Glow */
+            font-weight: 600;
+            text-transform: uppercase;
+            text-shadow: 0px 0px 10px rgba(20, 184, 166, 0.8);
+        }
+        .btn-primary {
+            width: 100%;
+            border-radius: 8px;
+            background: #14B8A6;
+            border: none;
+            transition: 0.3s;
+            color: black;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background: #0D9488;
+        }
+        input {
+            background: #1E293B;
+            border: 1px solid #8BE9FD;
+            color: #8BE9FD;
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+        }
+        input::placeholder {
+            color: #8BE9FD;
+            opacity: 0.7;
+        }
+        /* Efek Glow */
+        .glow {
+            text-shadow: 0px 0px 10px rgba(20, 184, 166, 0.8);
+            font-size: 20px;
+        }
+        @keyframes glowing {
+            0% { stroke-opacity: 0.2; transform: scale(1); }
+            50% { stroke-opacity: 0.6; transform: scale(1.05); }
+            100% { stroke-opacity: 0.2; transform: scale(1); }
+        }
+        circle {
+            animation: glowing 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SVG sebagai Background -->
+    <svg class="background-svg" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="400" cy="300" r="200" fill="none" stroke="#8BE9FD" stroke-width="3" opacity="0.4"/>
+        <circle cx="200" cy="150" r="120" fill="none" stroke="#EC4899" stroke-width="3" opacity="0.4"/>
+        <circle cx="600" cy="450" r="80" fill="none" stroke="#14B8A6" stroke-width="3" opacity="0.4"/>
+        <line x1="0" y1="0" x2="800" y2="600" stroke="#8BE9FD" stroke-width="2" opacity="0.2"/>
+        <line x1="800" y1="0" x2="0" y2="600" stroke="#EC4899" stroke-width="2" opacity="0.2"/>
+    </svg>
+
+    <!-- Container Login -->
+    <div class="login-container">
+        <h2 class="glow">Login</h2>
+
+        <form onsubmit="login(event)">
+            <div class="mb-3">
+                <input type="text" name="email" id="email" class="form-control" placeholder="Email" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+    <!-- Bootstrap 5 Script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+<script>
+    async function login(event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const formdata = new FormData();
+        formdata.append("email", email);
+        formdata.append("password", password);
+        const myHeaders = new Headers();
+        myHeaders.append("Accept", "*/*");
+        myHeaders.append("Accept-Language", "en-US,en;q=0.9,id;q=0.8");
+        myHeaders.append("Connection", "keep-alive");
+
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+        })
+        const data = await response.json();
+        if (data.success) {
+            alert("Login successful!");
+            window.location.href = "/dashboard"; // Redirect jika login berhasil
+        } else {
+            alert("Invalid email or password. Please try again.");
+        }
+    }
+</script>

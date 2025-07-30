@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="base-url" content="{{ base_url }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Vision Sidebar</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Font: Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- jquery-3 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+    <!-- ECharts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Styling -->
+    <link rel="stylesheet" href="/static/style.css">
+    
+</head>
+
+<body>
+    <!-- Background SVG -->
+    <svg class="background-svg" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+        <circle class="pulse-circle" cx="400" cy="300" r="250" fill="none" stroke="#8BE9FD" stroke-width="3" opacity="0.4"/>
+        <circle class="pulse-circle" cx="200" cy="150" r="120" fill="none" stroke="#EC4899" stroke-width="3" opacity="0.4"/>
+        <circle class="pulse-circle" cx="600" cy="450" r="80" fill="none" stroke="#14B8A6" stroke-width="3" opacity="0.4"/>
+        <line class="floating-line" x1="0" y1="0" x2="800" y2="600" stroke="#8BE9FD" stroke-width="2" opacity="0.2"/>
+        <line class="floating-line" x1="800" y1="0" x2="0" y2="600" stroke="#EC4899" stroke-width="2" opacity="0.2"/>
+        <line class="moving-line" x1="0" y1="100" x2="800" y2="100" stroke="#14B8A6" stroke-width="2" opacity="0.3"/>
+        <line class="moving-line" x1="0" y1="300" x2="800" y2="300" stroke="#8BE9FD" stroke-width="2" opacity="0.3"/>
+        <line class="moving-line" x1="0" y1="500" x2="800" y2="500" stroke="#EC4899" stroke-width="2" opacity="0.3"/>
+    </svg>
+    <div class="header">
+        <button class="toggle-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1>Neon Vision Dashboard</h1>
+        <div class="user-info">
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="profile">
+            <img src="https://i.pravatar.cc/100" alt="User Profile">
+            <h3>username</h3>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a onclick="showContent('dashboard')" class="nav-link"><i class="fas fa-tachometer-alt"></i><span> Dashboard</span></a>
+            </li>
+            <li class="nav-item">
+                <a onclick="showContent('profile')" class="nav-link"><i class="fas fa-user"></i><span> Profile</span></a>
+            </li>
+            <li class="nav-item">
+                <a onclick="showContent('manages_process')" class="nav-link"><i class="fa-solid fa-camera"></i></i><span> Manages Process</span></a>
+            </li>
+            <li class="nav-item">
+                <a onclick="showContent('settings')" class="nav-link"><i class="fas fa-cog"></i><span> Settings</span></a>
+            </li>
+            <li class="nav-item">
+                <a onclick="showContent('reports')" class="nav-link"><i class="fas fa-chart-line"></i><span> Reports</span></a>
+            </li>
+            <li class="nav-item">
+                <a onclick="logout_web()" class="nav-link"><i class="fa-solid fa-right-from-bracket"></i><span> Logout</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div id="dashboard" class="active-content">
+            <div class="content-header">
+                <h2><i class="fas fa-home"></i> Dashboard</h2>
+            </div>
+            <div class="content-body">
+                <p>Selamat Datang, username! Ini adalah halaman Dashboard utama.</p>
+                <div id="chart"></div>
+            </div>   
+        </div>
+
+        <div id="profile" class="hidden">
+            <h1 class="mb-4">Profile</h1>
+            <p>This is the profile div.</p>
+        </div>
+
+        <div id="manages_process" class="hidden">
+            <div class="content-header">
+                <h2><i class="fa-solid fa-camera"></i></i> Manages Process</h2>
+            </div>
+            <div class="content-body">
+                <h2>🚀 Manages Process</h2>
+                <div class="row g-4">        
+                    <div class="col-md-8">
+                        <div>
+                            <h5 class="section-title">List Process</h5>
+                            <div class="scrollable-list" id="processList">
+
+                            </div>
+                            <!-- Process Cards will be loaded here -->
+                        </div>
+                    </div>
+        
+                    <div class="col-md-4">
+                        <div>
+                            <h5 class="section-title">Recent Captured Data</h5>
+                            <div class="scrollable-list">
+                                <ul class="list-group" id="recentCapturedData">
+                            </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings" class="hidden">
+            <div class="content-header">
+                <h2><i class="fas fa-cogs"></i> Settings</h2>
+            </div>
+            <div class="content-body">                
+                <div class="menu-container">
+                    <div class="row">
+                        <div class="marquee">
+                            <span>⚠️ For the most up-to-date data, please use the "Fetch Credential" button before proceeding. ⚠️</span>
+                        </div>
+                        <div class="col">
+                            <div class="menu-box">
+                                <h2>🚀 Data and Statistics</h2>
+                                <div class="progress-bar-container">
+                                    <div id="progressBar" class="progress-bar"></div>
+                                </div>
+                                <div class="usage-details">
+                                    <div class="usage-card">
+                                        <h3>📥 Used</h3>
+                                        <p id="usedQuota"></p>
+                                    </div>
+                                    <div class="usage-card">
+                                        <h3>📤 Remaining</h3>
+                                        <p id="remainingQuota"></p>
+                                    </div>
+                                    <div class="usage-card">
+                                        <h3>📤 Capacity</h3>
+                                        <p id="capacityQuota"></p>
+                                    </div>
+                                </div>
+                                <div class="usage-details">
+                                    <button class="primary" onclick="fetchCredential()">💾 Fetch Credential</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="menu-box">
+                                <h2>📋 Device Settings</h2>
+                                <button class="primary" onclick="AddDeviceModal()">➕ Add Device</button>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Device Name</th>
+                                            <th>Device Type</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="deviceTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        </div>
+
+        <div id="reports" class="hidden">
+            <h1 class="mb-4">Reports</h1>
+            <p>This is the reports div.</p>
+        </div>
+
+        <div class="mt-4">
+            <button class="btn btn-primary" onclick="showAlert()">Show Alert</button>
+        </div>
+    </div>
+    
+    <div id="addDeviceModal" class="modal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Create New Device</h5>
+                <button type="button" onclick="closeModal('addDeviceModal')" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body scrollable-list">
+                <div class="container">
+                    <div class="">
+                        <label class="form-label">Device Name</label>
+                        <input type="text" class="form-control" id="device_name_form">
+                    </div>
+                    <div class="">
+                        <label class="form-label">Device Type</label>
+                        <select class="form-select" id="device_type_form" aria-label="Default select example">
+                            <option value="vehicle">Vehicle</option>
+                        </select>
+                    </div>
+                    <div class="">
+                        <label class="form-label">Source</label>
+                        <input type="text" class="form-control" id="device_source_form">
+                    </div>
+                    <button onclick="saveNewDevice()" type="submit" class="btn btn-primary">Submit</button>
+
+                </div>
+              </div>
+              <div class="modal-footer">
+              </div>
+            </div>
+          </div>
+    </div>
+
+    <div id="settingsDeviceModal" class="modal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content" id="video_feed">
+              <div class="modal-header">
+                <h5 class="modal-title">Draw Coordinates on Frames</h5>
+                <button type="button" onclick="closeModal('settingsDeviceModal')" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body scrollable-list">
+                <div class="container text-center">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <h3>Frame</h3>
+                        <canvas id="FrameCanvas"></canvas>
+                      </div>
+                      <div class="col-md-4">
+                        <h3>Coordinate</h3>                        
+                        <div class="coordinate-input">
+                            <input type="text" id="vertical_point" placeholder=" " required>
+                            <label for="vertical_point">Vertical Point</label>
+                            <button onclick="save_line('vertical')"><i class="fa-solid fa-circle-check"></i></button>
+                        </div>
+                        <div class="coordinate-input">
+                            <input type="text" id="horizontal_point" placeholder=" " required>
+                            <label for="horizontal_point">Horizontal Point</label>
+                            <button onclick="save_line('horizontal')"><i class="fa-solid fa-circle-check"></i></button>
+                        </div>
+                        <div class="coordinate-input">
+                            <input type="text" id="area_point" placeholder=" " required>
+                            <label for="area_point">Area Point</label>
+                            <button onclick="save_line('area')"><i class="fa-solid fa-circle-check"></i></button>
+                        </div>
+                        <button id="button_startDrawing" onclick="startDrawing()" style="width: 100%"><i class="fa-solid fa-circle-check"></i> Start Drawing</button>
+                        <button id="button_resetCanvas" onclick="resetCanvas()" style="width: 100%"><i class="fa-solid fa-circle-check"></i> Clear</button>
+                        <button id="button_saveTheLine" onclick="saveTheLine()" style="width: 100%"><i class="fa-solid fa-floppy-disk"></i> Save </button>
+                      </div>
+                    </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+              </div>
+            </div>
+          </div>
+    </div>
+    
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+<script>
+    function getBaseUrl() {
+        return document.querySelector('meta[name="base-url"]').content;
+    }
+
+    const cookies = document.cookie.split("; ");
+    const tokenCookie = (cookies.find(row => row.startsWith("access_token="))).substring(13);
+    // Sidebar toggle
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('collapsed');
+        document.querySelector('.content').classList.toggle('collapsed');
+    }
+
+    // ECharts Example
+    var chart = echarts.init(document.getElementById('chart'));
+    var option = {
+        title: {
+            text: 'ECharts Example',
+            textStyle: {
+                color: '#8BE9FD'
+            }
+        },
+        tooltip: {},
+        xAxis: {
+            data: ['A', 'B', 'C', 'D', 'E']
+        },
+        yAxis: {},
+        series: [{
+            name: 'Example',
+            type: 'bar',
+            data: [5, 20, 36, 10, 10],
+            itemStyle: {
+                color: '#16A085'
+            }
+        }]
+    };
+    chart.setOption(option);
+
+    const menu_function = {
+        settings: settings_menu,
+        manages_process: manages_process_menu
+    };
+
+    // Fungsi untuk mengganti konten tanpa reload
+    function showContent(menuId) {
+        let sections = document.querySelectorAll('.content > div');
+        sections.forEach(section => {
+            section.classList.add('hidden');
+            section.classList.remove('active-content');
+        });
+        document.getElementById(menuId).classList.remove('hidden');
+        document.getElementById(menuId).classList.add('active-content');
+        trigger_menu(menuId)
+    }
+
+    function trigger_menu(id){
+        if (menu_function[id]) {
+            menu_function[id]();
+        }
+    }
+    
+    async function fetchCredential(){
+        const url_credential = "/fetch-credential"
+        const response = await fetch(url_credential);
+        if (response.status==200) {
+            alert("Success")
+            trigger_menu('settings')
+        }else{
+            alert("Failed")
+        }
+    }
+    
+    async function settings_menu(id){
+        const url_credential = "/credentials"
+        const response = await fetch(url_credential);        
+        if (response.status==200) {
+            let data = await response.json()
+            let device = data.devices,
+            capacity = data.total_capacity,
+            used = data.devices.length,
+            remaining = capacity - used,
+            usagePercentage = (used/capacity) * 100
+            const table = document.getElementById('deviceTable');
+            table.innerHTML = '';
+            device.forEach((d, index) => {
+                const row = `<tr>
+                    <td>${d.device_id}</td>
+                    <td>${d.device_name}</td>
+                    <td>${d.detections}</td>
+                    <td>
+                        <button style="width: 100%" onclick="editDevice('${d._id}')"><i class="fa-solid fa-gear"></i></button>
+                        <button style="width: 100%" onclick="deleteDevice('${d._id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+                table.innerHTML += row;
+            })
+            $("#capacityQuota").text(capacity)
+            $("#usedQuota").text(used)
+            $("#remainingQuota").text(remaining)
+            $('#progressBar').css("width",`${usagePercentage}%`)
+        }else{
+            alert("Credential not found you can fetch with the button")
+        }
+
+    }
+    var interval_val = 1;
+    var timeout_ = null;
+
+    $("#vertical_point").on("mouseover", function() {
+        var this_ = this;
+        timeout_ = setInterval(function() {
+        $(this_).scrollLeft(interval_val);
+        interval_val++;
+        }, 100);
+    });
+    $("#vertical_point").on("mouseout", function() {
+        clearInterval(timeout_);
+        $(this).scrollLeft(0);
+    });
+
+    $("#horizontal_point").on("mouseover", function() {
+        var this_ = this;
+        timeout_ = setInterval(function() {
+        $(this_).scrollLeft(interval_val);
+        interval_val++;
+        }, 100);
+    });
+    $("#horizontal_point").on("mouseout", function() {
+        clearInterval(timeout_);
+        $(this).scrollLeft(0);
+    });
+    let context_drawer = null, canvas_drawer = null, background_drawer = null, status_drawing = false, points = [], points_original = []
+    function save_line(type_point) {
+        if (points.length<2) {
+            return alert("Please draw the line")
+        }
+        $(`#${type_point}_point`).val(JSON.stringify(points_original))
+        points = []
+        points_original = []
+        status_drawing = false
+    }
+
+    function startDrawing(){
+        status_drawing = true
+        context_drawer.drawImage(background_drawer, 0, 0, canvas_drawer.width, canvas_drawer.height)
+    }
+
+    function resetCanvas() {
+        if (background_drawer.src) {
+            context_drawer.drawImage(background_drawer, 0, 0, canvas_drawer.width, canvas_drawer.height);
+        } else {
+            context_drawer.clearRect(0, 0, canvas_drawer.width, canvas_drawer.height);
+        }
+        status_drawing = false
+        points = []
+        points_original = []
+    }
+    
+    function AddDeviceModal() {
+        const formAddDevice = document.getElementById("addDeviceModal");
+        formAddDevice.style.display = "block";
+        $("#device_name_form").val(""),
+        $('#device_type_form').val([0]);
+        $('#device_source_form').val("")
+    }
+    async function saveNewDevice() {
+        let device_name = $("#device_name_form").val(),
+        device_type = $('#device_type_form').find(":selected").val(),
+        device_source=$('#device_source_form').val()
+        
+        const requestOption = {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "Authorization":`Bearer ${tokenCookie}`
+            },
+            body:JSON.stringify({
+                device_name:device_name,
+                detections:device_type,
+                source:device_source
+            }),
+            redirect: "follow"
+        };
+        let url = getBaseUrl()+"/v2/enygma-computer-vision/create_device/"
+        let response = await fetch(url,requestOption)
+        if (response.status==201) {
+            alert("Success")
+            fetchCredential()
+            closeModal('addDeviceModal')
+        }else{
+            alert("Failed")
+        }
+        
+    }
+    async function deleteDevice(id) {
+        Swal.fire({
+            title: "Delete device ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Delete",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#EC4899",
+            cancelButtonColor: "#8BE9FD",
+            background: "#1E293B",
+            color: "#8BE9FD"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const requestOption = {
+                method: "DELETE",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    "Authorization":`Bearer ${tokenCookie}`
+                },
+                body:JSON.stringify({
+                    _id:id
+                }),
+                redirect: "follow"
+            };
+            let response = await fetch(getBaseUrl()+"/v2/enygma-computer-vision/delete_device/",requestOption)
+            if (response.status==200) {
+                alert("Success")
+                fetchCredential()
+                closeModal('addDeviceModal')
+            }else{
+                alert("Failed")
+            }
+            }
+        });
+    }
+    async function editDevice(id){        
+        $("#vertical_point").val("")
+        $('#horizontal_point').val("")
+        $('#area_point').val("")
+        try {
+            points = []
+            points_original = []
+            status_drawing = false
+            const videoFeed = document.getElementById("settingsDeviceModal");
+            let sessions = await fetch("/list-video-session", {
+                method: "POST",
+                redirect: "follow"
+            })
+            
+            if (sessions.statusText=="OK") {
+                sessions = await sessions.json()                
+            }else{
+                sessions = []
+            }
+            let session = sessions.find(x=>x._id==id)
+            if (session.vertical_line_points) {
+                $('#vertical_point').val(session.vertical_line_points)
+            }
+            if (session.horizontal_line_points) {
+                $('#horizontal_point').val(session.horizontal_line_points)
+            }
+            if (session.area_line_points) {
+                $('#area_point').val(session.area_line_points)
+            }
+            videoFeed.style.display = "block";
+            $("#button_startDrawing").attr("data-id",id)
+            $("#button_resetCanvas").attr("data-id",id)
+            $("#button_saveTheLine").attr("data-id",id)
+            let canvas = document.getElementById("FrameCanvas");
+            const sizing = document.getElementById("video_feed")
+            let newCanvas = canvas.cloneNode(true);
+            canvas.parentNode.replaceChild(newCanvas, canvas);
+            canvas = newCanvas;
+            var ctx = canvas.getContext("2d");
+            const background = new Image();
+            canvas.width = 688
+            canvas.height = 344
+            const response_feed = await fetch(`/single-feed-video-session/${session.session_id}`, { method: "GET" });
+            // Konversi respons stream menjadi Blob
+            const blob_video_feed = await response_feed.blob();
+            // background.src = `/feed-video-session/${session.session_id}`;
+            background.src = URL.createObjectURL(blob_video_feed);            
+            background.onload = () => {
+                ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(background.src);
+            };
+            context_drawer = ctx
+            background_drawer = background
+            canvas_drawer = canvas
+            background.onerror = () => {
+                alert('Failed to load the image. Please check the URL.');
+            };
+            canvas.addEventListener('click', (e) => {
+                if (!status_drawing) {
+                    return showAlert()
+                }
+                const rect = canvas.getBoundingClientRect();
+                // Calculate scale ratio canvas x rect
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+
+                // Get clicked coordinates relative to the canvas
+                const x = (e.clientX - rect.left) * scaleX;
+                const y = (e.clientY - rect.top) * scaleY;
+            
+                // Convert to original image coordinates
+                const originalX = x * (background.naturalWidth / canvas.width);
+                const originalY = y * (background.naturalHeight / canvas.height);
+                
+                drawPoint(ctx, x, y, points, points_original, originalX, originalY);
+                if (points.length > 1) {
+                    drawLine(ctx, points[points.length - 2], points[points.length - 1]);
+                }
+            })
+        } catch (error) {
+            console.log(error)            
+        }
+        
+    }
+    async function saveTheLine() {
+        let id = $("#button_saveTheLine").attr("data-id")
+        Swal.fire({
+            title: "Save coordinate lines ?",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#EC4899",
+            cancelButtonColor: "#8BE9FD",
+            background: "#1E293B",
+            color: "#8BE9FD"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                let send_data = {
+
+                }
+                if ($("#vertical_point").val()) {
+                    send_data.vertical_line_points = $("#vertical_point").val()
+                }
+                if ($("#horizontal_point").val()) {
+                    send_data.horizontal_line_points = $("#horizontal_point").val()
+                }
+                if ($("#area_point").val()) {
+                    send_data.area_line_points = $("#area_point").val()
+                }
+                
+                const requestOption = {
+                method: "PUT",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    "Authorization":`Bearer ${tokenCookie}`
+                },
+                body:JSON.stringify({
+                    _id:id,
+                    data:send_data
+                }),
+                redirect: "follow"
+            };
+            let response = await fetch(getBaseUrl()+"/v2/enygma-computer-vision/update_device/",requestOption)
+            if (response.status==200) {
+                alert("Success")
+                fetchCredential()
+                closeModal('addDeviceModal')
+            }else{
+                alert("Failed")
+            }
+            }
+        });
+    }
+    function drawPoint(ctx, x, y, points, points_original, x_ori, y_ori) {
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#0e2c87';
+        ctx.fill();
+        points.push({ x, y });
+        points_original.push({ x:x_ori, y:y_ori });
+    }
+    function drawLine(ctx, start, end) {
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.strokeStyle = '#0e8761';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+    
+    function closeModal(element) {
+        document.getElementById(element).style.display = "none";
+    }
+    function updateQuotaStatus() {
+        const remainingQuota = deviceCapacity - usedQuota;
+        document.getElementById('quotaStatus').textContent = `Remaining Quota: ${remainingQuota}`;
+
+        const usagePercentage = (usedQuota / deviceCapacity) * 100;
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = `${usagePercentage}%`;
+
+        if (usagePercentage >= 90) {
+            progressBar.classList.add('full');
+            alert('⚠️ Warning: Quota is nearing full capacity!');
+        } else {
+            progressBar.classList.remove('full');
+        }
+    }
+    // SweetAlert Example
+    function showAlert() {
+        Swal.fire({
+            title: 'Success!',
+            text: 'This is a SweetAlert example.',
+            icon: 'success',
+            confirmButtonColor: '#16A085'
+        });
+    }
+    // Lazy Load for Process List
+    let processPage = 1;
+    
+    function manages_process_menu(page) {
+        const processList = document.getElementById('processList');
+        // processList.innerHTML = '<h5 class="section-title">List Process</h5>';
+        processList.innerHTML = '';
+        fetch(`/list-video-session?page=${page}`,{
+            method: "POST",
+            redirect: "follow"
+        })
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(process => {
+                const processCard = document.createElement('div');
+                processCard.className = 'process-card';
+                processCard.innerHTML = `
+                    <h5>${process.device_name}</h5>
+                    <div class="process-details">
+                        <span>Session ID: ${process.session_id}</span>
+                        <span>Source: ${process.stream_url}</span>
+                        <span id="frame_process_${process.session_id}">Total Frames Processed: - </span>
+                        <span class="status-running" id="status_process_${process.session_id}">Status: - </span>
+                    </div>
+                    <button onclick="start_process('${process.session_id}')" class="btn-manage">Start</button>
+                    <button onclick="stop_process('${process.session_id}')" class="btn-manage">Stop</button>
+                    <button onclick="preview('${process.session_id}')" class="btn-manage">Test</button>
+                `;
+                processList.appendChild(processCard);
+                socketListProcess(process.session_id)
+            });
+        });
+        socketCapturedData()
+    }
+
+    function socketCapturedData(){
+        ws = new WebSocket(`/socket/recent-captured-data`)
+        ws.onmessage = (event) => {
+            const recentCapturedData = document.getElementById('recentCapturedData');
+            const recentItem = document.createElement('div');
+            recentItem.className = 'recent-item';
+            const recentDetail = document.createElement('div');
+            recentDetail.className = 'recent-details';
+            let data = JSON.parse(event.data).message;
+            recentDetail.innerHTML = `
+            <div class="recent-details">
+                <h5>${data.device_name}</h5>
+                <span>Label: ${data.label}</span>
+                <strong>Direction: ${data.direction}</strong>
+                <span>Confidences: ${data.confidence}</span>
+                <span>Time: ${data.timestamp} GMT+0</span>
+            </div>
+            `
+            recentItem.appendChild(recentDetail);
+            recentCapturedData.prepend(recentItem);
+        }
+    }
+
+    async function start_process(session_id){
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify({session_id:session_id}),
+            redirect: "follow"
+        };
+        
+        let res = await fetch("/start-video-session", requestOptions)
+        data = await res.json()
+        
+        if (res.status==200) {
+            alert(data.messages)
+        }
+        if (res.status==302) {
+            alert(data.error)
+        }
+        if (res.status==400) {
+            alert(data.error)
+        }
+        if (res.status==404) {
+            alert(data.error)
+        }
+    }
+
+    function stop_process(session_id){
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify({session_id:session_id}),
+            redirect: "follow"
+        };
+
+        fetch("/stop-video-session", requestOptions)
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
+        $(`#frame_process_${session_id}`).text(`Total Frames Processed: -`);
+        $(`#status_process_${session_id}`).text(`Status: Stopped`);
+    }
+
+    function socketListProcess(sessionId) {
+        ws = new WebSocket(`/ws/${sessionId}`);
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            $(`#frame_process_${sessionId}`).text(`Total Frames Processed: ${data.frame_number}`);
+            $(`#status_process_${sessionId}`).text(`Status: ${data.status}`);
+        };
+    }
+    // Initial load
+    // loadProcesses(processPage);
+
+    // Lazy loading on scroll
+    processList.addEventListener('scroll', () => {
+        if (processList.scrollTop + processList.clientHeight >= processList.scrollHeight) {
+            processPage++;
+            manages_process_menu(processPage);
+        }
+    });
+    function logout_web(){
+        Swal.fire({
+            title: "Yakin ingin logout?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Logout",
+            cancelButtonText: "Batal",
+            confirmButtonColor: "#EC4899",
+            cancelButtonColor: "#8BE9FD",
+            background: "#1E293B",
+            color: "#8BE9FD"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/logout";
+            }
+        });
+    }
+    
+    
+    function resizeCanvas() {
+        canvas.width = videoFeed.width;
+        canvas.height = videoFeed.height;
+    }
+    function updatePoint() {
+        const x = parseInt(xInput.value, 10);
+        const y = parseInt(yInput.value, 10);
+        drawPoint(x, y);
+        ws.send(JSON.stringify({ x, y }));
+        closeModal();
+    }
+
+    // window.onload = resizeCanvas;
+    // window.onresize = resizeCanvas;
+</script>

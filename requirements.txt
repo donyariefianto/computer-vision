@@ -1,0 +1,32 @@
+# FastAPI dependencies
+fastapi
+uvicorn
+
+# Video Processing
+av
+opencv-python
+
+# AI Model
+ultralytics
+
+# Frontend dependencies
+jinja2
+
+# Additional dependencies
+numpy
+
+# request REST
+httpx
+
+# security
+cryptography
+
+# schedule 
+schedule 
+
+minio
+
+motor 
+pyjwt 
+passlib[bcrypt] 
+python-dotenv
