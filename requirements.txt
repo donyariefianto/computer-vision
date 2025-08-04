@@ -30,3 +30,4 @@ motor
 pyjwt 
 passlib[bcrypt] 
 python-dotenv
+boxmot
