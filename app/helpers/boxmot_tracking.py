@@ -120,6 +120,7 @@ class BoxmotTracking:
 
     def initial_tracker():
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(f"Using device: {device}")
         return BotSort(reid_weights=Path('osnet_x0_25_msmt17.pt'), device=device, half=False)
     
     def draw_virtual_lines(frame, vertical_line_points, horizontal_line_points):
